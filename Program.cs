@@ -78,7 +78,7 @@ namespace iSignNetExample
                         "pdf[files][0][digest]");
                     using (
                         var message =
-                            client.PostAsync("https://api-sandbox.isign.lt/mobile/sign.json?access_token="+Api.accessToken,
+                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token="+Api.accessToken,
                                 content))
                     {
                         var input = message.Result;
@@ -93,7 +93,7 @@ namespace iSignNetExample
         {
             using (var client = new HttpClient())
             {
-                using (var message = client.GetAsync(string.Format("https://api-sandbox.isign.lt/mobile/sign/status/{0}.json?access_token="+Api.accessToken, response.Token)))
+                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token="+Api.accessToken, response.Token)))
                 {
                     var input = message.Result;
                     var serializator = new DataContractJsonSerializer(typeof(FileResponse));
