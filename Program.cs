@@ -109,7 +109,7 @@ namespace iSignNetExample
             var response = Sign(contentData);
             if (response.Status == "ok")
             {
-                Console.WriteLine("iSign.io API signing example. You will receive:\nControl code: {0}, for signign token: {1}", response.ControlCode, response.Token);
+                Console.WriteLine("iSign.io API signing example. You will receive:\nControl code: {0}, for signing token: {1}", response.ControlCode, response.Token);
                 FileResponse fileResponse = null;
                 //Thread.Sleep(30000);
                 for (int i = 0; i < 30; i++)
