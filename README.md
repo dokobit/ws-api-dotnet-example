@@ -3,8 +3,7 @@
 ## How to start? 
 
 Check more documentation at https://developers.isign.io
-
-Request access token at https://www.isign.io/?#request-access
+Request access token [here](https://www.isign.io/contacts#request-access).
 
 Enter API access token to Program.cs:21
 
