@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -21,24 +21,30 @@ namespace iSignNetExample
             public static string accessToken = ""; //Enter Your iSign.io API access token
         }
 
+
         [DataContract]
         public class Response
         {
-            [DataMember(Name="status")]
+            [DataMember(Name = "status")]
             public string Status { get; set; }
-            [DataMember(IsRequired = false, Name="controlCode")]
+            [DataMember(IsRequired = false, Name = "message")]
+            public string Message { get; set; }
+            [DataMember(IsRequired = false, Name = "errors")]
+            public IEnumerable<string> Errors { get; set; }
+        }
+
+        [DataContract, KnownType(typeof(Response))]
+        public class RequestResponse : Response
+        {
+            [DataMember(IsRequired = false, Name = "controlCode")]
             public string ControlCode { get; set; }
             [DataMember(IsRequired = false, Name = "token")]
             public string Token { get; set; }
-            [DataMember(IsRequired = false, Name = "message")]
-            public string Message { get; set; }
         }
 
-        [DataContract]
-        public class FileResponse
+        [DataContract, KnownType(typeof(Response))]
+        public class FileResponse : Response
         {
-            [DataMember(Name = "status")]
-            public string Status { get; set; }
             [DataMember(IsRequired = false, Name = "signature_id")]
             public string SignatureId { get; set; }
             [DataMember(IsRequired = false, Name = "file")]
@@ -56,7 +62,7 @@ namespace iSignNetExample
             public string Digest { get; set; }
         }
 
-        public static Response Sign(byte[] document)
+        public static RequestResponse Sign(byte[] document, string phone, string code)
         {
             using (var client = new HttpClient())
             {
@@ -64,8 +70,8 @@ namespace iSignNetExample
                     new MultipartFormDataContent("Upload----" + DateTime.Now))
                 {
                     content.Add(new StringContent("pdf"), "type");
-                    content.Add(new StringContent("+37060000007"), "phone"); //enter phone with country code
-                    content.Add(new StringContent("51001091072"), "code"); //enter personal code
+                    content.Add(new StringContent(phone), "phone");
+                    content.Add(new StringContent(code), "code");
                     content.Add(new StringContent("true"), "timestamp");
                     content.Add(new StringContent("Vardas Pavardenis"), "pdf[contact]");
                     content.Add(new StringContent("Test"), "pdf[reason]");
@@ -78,22 +84,22 @@ namespace iSignNetExample
                         "pdf[files][0][digest]");
                     using (
                         var message =
-                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token="+Api.accessToken,
+                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token=" + Api.accessToken,
                                 content))
                     {
                         var input = message.Result;
-                        var serializator = new DataContractJsonSerializer(typeof (Response));
-                        return (Response) serializator.ReadObject(input.Content.ReadAsStreamAsync().Result);
+                        var serializator = new DataContractJsonSerializer(typeof(RequestResponse));
+                        return (RequestResponse)serializator.ReadObject(input.Content.ReadAsStreamAsync().Result);
                     }
                 }
             }
         }
 
-        public static FileResponse GetDocument(Response response)
+        public static FileResponse GetDocument(RequestResponse response)
         {
             using (var client = new HttpClient())
             {
-                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token="+Api.accessToken, response.Token)))
+                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token=" + Api.accessToken, response.Token)))
                 {
                     var input = message.Result;
                     var serializator = new DataContractJsonSerializer(typeof(FileResponse));
@@ -104,12 +110,15 @@ namespace iSignNetExample
 
         static void Main(string[] args)
         {
-            byte[] contentData =
-                System.IO.File.ReadAllBytes(@"../../test.pdf");
-            var response = Sign(contentData);
+            string fileName = args.Length > 0 ? args[0] : @"../../test.pdf"; // example pdf file to sign
+            string phone = args.Length > 1 ? args[1] : "+37060000007"; // enter phone with country code
+            string code = args.Length > 2 ? args[2] : "51001091072"; // enter personal code
+
+            byte[] contentData = System.IO.File.ReadAllBytes(fileName);
+            var response = Sign(contentData, phone, code);
             if (response.Status == "ok")
             {
-                Console.WriteLine("iSign.io API signing example. You will receive:\nControl code: {0}, for signing token: {1}", response.ControlCode, response.Token);
+                Console.WriteLine("iSign.io API signing example. You will receive:\nControl code: {0}, for signign token: {1}", response.ControlCode, response.Token);
                 FileResponse fileResponse = null;
                 //Thread.Sleep(30000);
                 for (int i = 0; i < 30; i++)
@@ -119,23 +128,56 @@ namespace iSignNetExample
                     if (fileResponse.Status != "waiting") break;
                     Thread.Sleep(1000);
                 }
+
                 if (fileResponse == null || fileResponse.Status != "ok")
                 {
-                    Console.WriteLine("Failed to receive response or response is not ok");
+                    printResponse(fileResponse);
+
+                    Console.WriteLine("\nPress any key to continue...");
+                    Console.ReadKey();
                     return;
                 }
+                
                 if (fileResponse.File != null)
                 {
-
                     System.IO.File.WriteAllBytes("test-result.pdf", Convert.FromBase64String(fileResponse.File.Content));
                     Console.WriteLine("Received response. Open ./test-result.pdf");
-                    Console.ReadKey();
                 }
             }
             else
             {
-                Console.WriteLine("Status: " + response.Status+"\nMessage: "+response.Message);
-                Console.ReadKey();
+                printResponse(response);
+            }
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+        }
+
+        private static void printResponse(Response response)
+        {
+            if (response != null)
+            {
+                if (response.Status != null)
+                {
+                    Console.WriteLine("Status: " + response.Status + "\n");
+                }
+
+                if (response.Message != null)
+                {
+                    Console.WriteLine("Message: " + response.Message + "\n");
+                }
+
+                if (response.Errors != null && response.Errors.Count() > 0)
+                {
+                    Console.WriteLine("Errors:\n");
+                    foreach (var error in response.Errors)
+                    {
+                        Console.WriteLine("\t" + error + "\n");
+                    }
+                }
+            }
+            else {
+                Console.WriteLine("Failed to receive response\n");
             }
         }
     }
