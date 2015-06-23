@@ -155,7 +155,7 @@ namespace iSignNetExample
                     Console.WriteLine("Waiting");
                     fileResponse = GetDocument(response);
                     if (fileResponse.Status != "waiting") break;
-                    Thread.Sleep(10000);
+                    Thread.Sleep(1000);
                 }
 
                 if (fileResponse == null || fileResponse.Status != "ok")
