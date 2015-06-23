@@ -11,7 +11,3 @@ Enter API access token to Program.cs:21
 Enter your phone number and personal code (or use testing ones provided).
 
 Build project & Run.
-
-## Console command
-
-`iSign-net-example.exe {fileName} {phone} {personalCode}`

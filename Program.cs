@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -21,30 +21,26 @@ namespace iSignNetExample
             public static string accessToken = ""; //Enter Your iSign.io API access token
         }
 
-
         [DataContract]
         public class Response
         {
-            [DataMember(Name = "status")]
+            [DataMember(Name="status")]
             public string Status { get; set; }
+            [DataMember(IsRequired = false, Name="controlCode")]
+            public string ControlCode { get; set; }
+            [DataMember(IsRequired = false, Name = "token")]
+            public string Token { get; set; }
             [DataMember(IsRequired = false, Name = "message")]
             public string Message { get; set; }
             [DataMember(IsRequired = false, Name = "errors")]
             public IEnumerable<string> Errors { get; set; }
         }
 
-        [DataContract, KnownType(typeof(Response))]
-        public class RequestResponse : Response
+        [DataContract]
+        public class FileResponse
         {
-            [DataMember(IsRequired = false, Name = "controlCode")]
-            public string ControlCode { get; set; }
-            [DataMember(IsRequired = false, Name = "token")]
-            public string Token { get; set; }
-        }
-
-        [DataContract, KnownType(typeof(Response))]
-        public class FileResponse : Response
-        {
+            [DataMember(Name = "status")]
+            public string Status { get; set; }
             [DataMember(IsRequired = false, Name = "signature_id")]
             public string SignatureId { get; set; }
             [DataMember(IsRequired = false, Name = "file")]
@@ -62,7 +58,7 @@ namespace iSignNetExample
             public string Digest { get; set; }
         }
 
-        public static RequestResponse Sign(byte[] document, string phone, string code)
+        public static Response Sign(byte[] document, string phone, string code)
         {
             using (var client = new HttpClient())
             {
@@ -84,22 +80,22 @@ namespace iSignNetExample
                         "pdf[files][0][digest]");
                     using (
                         var message =
-                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token=" + Api.accessToken,
+                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token="+Api.accessToken,
                                 content))
                     {
                         var input = message.Result;
-                        var serializator = new DataContractJsonSerializer(typeof(RequestResponse));
-                        return (RequestResponse)serializator.ReadObject(input.Content.ReadAsStreamAsync().Result);
+                        var serializator = new DataContractJsonSerializer(typeof (Response));
+                        return (Response) serializator.ReadObject(input.Content.ReadAsStreamAsync().Result);
                     }
                 }
             }
         }
 
-        public static FileResponse GetDocument(RequestResponse response)
+        public static FileResponse GetDocument(Response response)
         {
             using (var client = new HttpClient())
             {
-                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token=" + Api.accessToken, response.Token)))
+                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token="+Api.accessToken, response.Token)))
                 {
                     var input = message.Result;
                     var serializator = new DataContractJsonSerializer(typeof(FileResponse));
@@ -113,7 +109,7 @@ namespace iSignNetExample
             string fileName = args.Length > 0 ? args[0] : @"../../test.pdf"; // example pdf file to sign
             string phone = args.Length > 1 ? args[1] : "+37060000007"; // enter phone with country code
             string code = args.Length > 2 ? args[2] : "51001091072"; // enter personal code
-
+            
             byte[] contentData = System.IO.File.ReadAllBytes(fileName);
             var response = Sign(contentData, phone, code);
             if (response.Status == "ok")
@@ -131,53 +127,30 @@ namespace iSignNetExample
 
                 if (fileResponse == null || fileResponse.Status != "ok")
                 {
-                    printResponse(fileResponse);
-
-                    Console.WriteLine("\nPress any key to continue...");
-                    Console.ReadKey();
+                    Console.WriteLine("Failed to receive response or response is not ok");
                     return;
                 }
-                
+
                 if (fileResponse.File != null)
                 {
                     System.IO.File.WriteAllBytes("test-result.pdf", Convert.FromBase64String(fileResponse.File.Content));
                     Console.WriteLine("Received response. Open ./test-result.pdf");
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
                 }
             }
             else
             {
-                printResponse(response);
-            }
-
-            Console.WriteLine("\nPress any key to continue...");
-            Console.ReadKey();
-        }
-
-        private static void printResponse(Response response)
-        {
-            if (response != null)
-            {
-                if (response.Status != null)
-                {
-                    Console.WriteLine("Status: " + response.Status + "\n");
-                }
-
-                if (response.Message != null)
-                {
-                    Console.WriteLine("Message: " + response.Message + "\n");
-                }
-
-                if (response.Errors != null && response.Errors.Count() > 0)
-                {
-                    Console.WriteLine("Errors:\n");
+                Console.WriteLine("Status: " + response.Status + "\nMessage: " + response.Message);
+                if (response.Errors != null && response.Errors.Count() > 0) {
+                    Console.WriteLine("\nErrors:");
                     foreach (var error in response.Errors)
                     {
-                        Console.WriteLine("\t" + error + "\n");
+                        Console.WriteLine("\n " + error);
                     }
                 }
-            }
-            else {
-                Console.WriteLine("Failed to receive response\n");
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey();
             }
         }
     }
