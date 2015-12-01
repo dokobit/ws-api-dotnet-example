@@ -139,6 +139,8 @@ namespace iSignNetExample
 
         static void Main(string[] args)
         {
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             string fileName = args.Length > 0 ? args[0] : @"../../test.pdf"; // example pdf file to sign
             string phone = args.Length > 1 ? args[1] : "+37060000007"; // enter phone with country code
             string code = args.Length > 2 ? args[2] : "51001091072"; // enter personal code
