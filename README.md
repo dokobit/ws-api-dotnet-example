@@ -4,7 +4,7 @@
 
 Check more documentation at https://developers.isign.io
 
-Request developer access token [here](https://www.isign.io/contacts#request-access).
+Request developer access token [here](https://www.isign.io/services/contacts#request-access).
 
 Enter API access token to Program.cs:21
 
