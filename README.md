@@ -1,10 +1,10 @@
-# iSign.io API .NET C# Example
+# ISIGN.io API .NET C# Example
 
 ## How to start? 
 
 Check more documentation at https://developers.isign.io
 
-Request developer access token [here](https://www.isign.io/services/contacts#request-access).
+Request developer access token [here](https://www.isign.io/services/token-request).
 
 Enter API access token to Program.cs:21
 
@@ -14,4 +14,4 @@ Build project & Run.
 
 ## Console command
 
-`iSign-net-example.exe {fileName} {phone} {personalCode}`
+`isign-net-example.exe {fileName} {phone} {personalCode}`
