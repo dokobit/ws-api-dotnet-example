@@ -36,7 +36,7 @@ namespace iSignNetExample
         [DataContract, KnownType(typeof(Response))]
         public class RequestResponse : Response
         {
-            [DataMember(IsRequired = false, Name = "controlCode")]
+            [DataMember(IsRequired = false, Name = "control_code")]
             public string ControlCode { get; set; }
             [DataMember(IsRequired = false, Name = "token")]
             public string Token { get; set; }
