@@ -18,7 +18,7 @@ namespace iSignNetExample
     {
         public class Api
         {
-            public static string accessToken = ""; //Enter Your iSign.io API access token
+            public static string accessToken = ""; //Enter Your Dokobit WS API access token
         }
 
 
@@ -84,7 +84,7 @@ namespace iSignNetExample
                         "pdf[files][0][digest]");
                     using (
                         var message =
-                            client.PostAsync("https://developers.isign.io/mobile/sign.json?access_token=" + Api.accessToken,
+                            client.PostAsync("https://developers.dokobit.com/mobile/sign.json?access_token=" + Api.accessToken,
                                 content))
                     {
                         var input = message.Result;
@@ -99,7 +99,7 @@ namespace iSignNetExample
         {
             using (var client = new HttpClient())
             {
-                using (var message = client.GetAsync(string.Format("https://developers.isign.io/mobile/sign/status/{0}.json?access_token=" + Api.accessToken, response.Token)))
+                using (var message = client.GetAsync(string.Format("https://developers.dokobit.com/mobile/sign/status/{0}.json?access_token=" + Api.accessToken, response.Token)))
                 {
                     var input = message.Result;
                     var serializator = new DataContractJsonSerializer(typeof(FileResponse));
@@ -149,7 +149,7 @@ namespace iSignNetExample
             var response = Sign(contentData, phone, code);
             if (response.Status == "ok")
             {
-                Console.WriteLine("iSign.io API signing example. You will receive:\nControl code: {0}, for signing token: {1}", response.ControlCode, response.Token);
+                Console.WriteLine("Dokobit WS API signing example. You will receive:\nControl code: {0}, for signing token: {1}", response.ControlCode, response.Token);
                 FileResponse fileResponse = null;
                 //Thread.Sleep(30000);
                 for (int i = 0; i < 30; i++)
