@@ -14,4 +14,4 @@ Build project & Run.
 
 ## Console command
 
-`isign-net-example.exe {fileName} {phone} {personalCode}`
+`Dokobit-dotnet-example.exe {fileName} {phone} {personalCode}`

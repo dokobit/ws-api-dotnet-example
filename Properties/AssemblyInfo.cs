@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("iSign-net-example")]
-[assembly: AssemblyDescription("iSign.io API example")]
+[assembly: AssemblyTitle("Dokobit-dotnet-example")]
+[assembly: AssemblyDescription("Dokobit WS API example")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("UAB Estina")]
-[assembly: AssemblyProduct("iSign-net-example")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("iSign")]
+[assembly: AssemblyCompany("Dokobit, UAB")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyProduct("Dokobit-dotnet-example")]
+[assembly: AssemblyTrademark("Dokobit")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -7,14 +7,14 @@
     <ProjectGuid>{ED6E51C0-FC01-4D2B-B77E-513F493E9F69}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>iSignNetExample</RootNamespace>
-    <AssemblyName>iSign-net-example</AssemblyName>
+    <RootNamespace>DokobitDotnetExample</RootNamespace>
+    <AssemblyName>DokobitDotnetExample</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <StartupObject>DokobitDotnetExample.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>iSignNetExample.Program</StartupObject>
+    <StartupObject>DokobitDotnetExample.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
