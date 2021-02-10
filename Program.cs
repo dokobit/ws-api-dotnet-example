@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+// Dokobit WS API .NET C# Example - Mobile ID Signing
 namespace DokobitDotnetExample
 {
     class Program
@@ -69,18 +70,19 @@ namespace DokobitDotnetExample
                 using (var content =
                     new MultipartFormDataContent("Upload----" + DateTime.Now))
                 {
+                    // Signed document format. Check documentation for all available options.
                     content.Add(new StringContent("pdf"), "type");
                     content.Add(new StringContent(phone), "phone");
                     content.Add(new StringContent(code), "code");
                     content.Add(new StringContent("true"), "timestamp");
-                    content.Add(new StringContent("Vardas Pavardenis"), "pdf[contact]");
+                    content.Add(new StringContent("Name Surname"), "pdf[contact]");
                     content.Add(new StringContent("Test"), "pdf[reason]");
                     content.Add(new StringContent("Vilnius"), "pdf[location]");
                     content.Add(new StringContent("test.pdf"), "pdf[files][0][name]");
                     content.Add(new StringContent(Convert.ToBase64String(document)), "pdf[files][0][content]");
                     content.Add(
                         new StringContent(
-                            BitConverter.ToString(SHA1.Create().ComputeHash(document)).Replace("-", "").ToLower()),
+                            BitConverter.ToString(SHA256.Create().ComputeHash(document)).Replace("-", "").ToLower()),
                         "pdf[files][0][digest]");
                     using (
                         var message =
@@ -142,8 +144,8 @@ namespace DokobitDotnetExample
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
             string fileName = args.Length > 0 ? args[0] : @"../../test.pdf"; // example pdf file to sign
-            string phone = args.Length > 1 ? args[1] : "+37060000007"; // enter phone with country code
-            string code = args.Length > 2 ? args[2] : "51001091072"; // enter personal code
+            string phone = args.Length > 1 ? args[1] : "+37060000666"; // enter phone with country code
+            string code = args.Length > 2 ? args[2] : "50001018865"; // enter personal code
 
             byte[] contentData = System.IO.File.ReadAllBytes(fileName);
             var response = Sign(contentData, phone, code);
